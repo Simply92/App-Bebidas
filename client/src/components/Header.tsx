@@ -1,10 +1,34 @@
-import { useMemo } from "react"
+import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react"
 import { NavLink, useLocation } from "react-router-dom"
+import { useAppStore } from "../stores/useAppStore"
 
 const Header = () => {
+    const [search, setSearch] = useState({
+        ingredient: '',
+        category: ''
+    })
     const { pathname } = useLocation()
 
     const isHome = useMemo(() => pathname === '/', [pathname])
+    const { fetchCagories, categories, searchRecipes } = useAppStore()
+    useEffect(() => {
+        fetchCagories()
+    }, [])
+    const handleChange = (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>) => {
+        setSearch({
+            ...search,
+            [e.target.name]: e.target.value
+        })
+    }
+    const hadleSubmit = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        if (Object.values(search).includes('')) {
+            console.log("Todos los campos son obligatorios");
+            return
+        }
+        searchRecipes(search)
+
+    }
     return (
         <header className={isHome ? 'bg-header bg-center bg-cover' : 'bg-slate-800'}>
             <div className="mx-auto container px-5 py-16">
@@ -25,7 +49,8 @@ const Header = () => {
                     </nav>
                 </div>
                 {isHome && (
-                    <form className="md:w-1/2 2xl:w-1/3 bg-orange-400 my-32 p-10 rounded-lg shadow space-y-6">
+                    <form className="md:w-1/2 2xl:w-1/3 bg-orange-400 my-32 p-10 rounded-lg shadow space-y-6"
+                        onSubmit={hadleSubmit}>
                         <div className="space-y-4">
                             <label htmlFor="ingredient"
                                 className="block text-white uppercase font-extrabold text-lg">
@@ -35,7 +60,10 @@ const Header = () => {
                                 type="text"
                                 name="ingredient"
                                 className="p-3 w-full rounded-lg focus:outline-none"
-                                placeholder="Nombre o ingrediente. Ej. Vodka, Tequila" />
+                                placeholder="Nombre o ingrediente. Ej. Vodka, Tequila"
+                                onChange={handleChange}
+                                value={search.ingredient}
+                            />
                         </div>
                         <div className="space-y-4">
                             <label htmlFor="category"
@@ -46,8 +74,17 @@ const Header = () => {
                                 id="category"
                                 name="category"
                                 className="p-3 w-full rounded-lg focus:outline-none"
+                                onChange={handleChange}
+                                value={search.category}
                             >
                                 <option value="">-- Seleccione --</option>
+                                {categories.drinks.map(category => (
+                                    <option
+                                        key={category.strCategory}
+                                        value={category.strCategory}>
+                                        {category.strCategory}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                         <input type="submit"

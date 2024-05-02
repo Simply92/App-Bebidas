@@ -4,7 +4,7 @@ export default {
   "./src/**/*.{js,ts,jsx,tsx}",],
   theme: {
     extend: {
-      backgroundImage: {
+      backgroundImage : {
         "header" : "url('/bg.jpg')"
       }
     },
