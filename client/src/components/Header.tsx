@@ -10,7 +10,7 @@ const Header = () => {
     const { pathname } = useLocation()
 
     const isHome = useMemo(() => pathname === '/', [pathname])
-    const { fetchCagories, categories, searchRecipes } = useAppStore()
+    const { fetchCagories, categories, searchRecipes, showNotification } = useAppStore()
     useEffect(() => {
         fetchCagories()
     }, [])
@@ -23,7 +23,7 @@ const Header = () => {
     const hadleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         if (Object.values(search).includes('')) {
-            console.log("Todos los campos son obligatorios");
+            showNotification({ text: "Todos los campos son obligatorios", error: true });
             return
         }
         searchRecipes(search)
